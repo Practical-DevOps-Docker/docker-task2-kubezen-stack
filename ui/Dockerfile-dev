@@ -1,0 +1,12 @@
+FROM node:16-alpine AS builder
+WORKDIR /usr/src/app/app-ui
+
+COPY . .
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+RUN npm ci && npm run build -- --prod
+
+FROM nginx:alpine AS angular-ui
+
+COPY --from=builder /usr/src/app/app-ui/dist/angular-nodejs /usr/share/nginx/html
+EXPOSE 4201
